@@ -139,3 +139,10 @@ def process_mnist(
         )
 
     return create_loader(train_dataset), None, create_loader(test_dataset)
+
+
+if __name__ == "__main__":
+    train, vali, test = process_mnist()
+
+    for img, label in train:
+        print(img.shape)
