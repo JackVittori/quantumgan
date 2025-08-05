@@ -142,7 +142,8 @@ def process_mnist(
 
 
 if __name__ == "__main__":
-    train, vali, test = process_mnist()
-
+    train, vali, test = process_mnist(batch_size=1, selected_labels=[0])
+    counter = 0
     for img, label in train:
-        print(img.shape)
+        counter += 1
+    print(counter)

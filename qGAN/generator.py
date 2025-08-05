@@ -31,7 +31,7 @@ class PatchQuantumGenerator(nn.Module):
         dev = qml.device("lightning.qubit", wires=self.n_qubits)
 
         # Cuda device if available
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         # Initialize parameters for each sub-generator
         self.q_params = nn.ParameterList([
@@ -47,7 +47,7 @@ class PatchQuantumGenerator(nn.Module):
         weights = weights.reshape(self.q_depth, self.n_qubits)
 
         # Encode latent vector
-        for i in range(n_qubits):
+        for i in range(self.n_qubits):
             qml.RY(noise[i], wires=i)
 
         # Parameterised layers
@@ -77,16 +77,16 @@ class PatchQuantumGenerator(nn.Module):
         """
         patch_size = 2 ** (self.n_qubits - self.n_a_qubits)
         batch_size = x.size(0)
-        images = torch.Tensor(batch_size, 0).to(device)
+        images = torch.Tensor(batch_size, 0).to(self.device)
 
         for params in self.q_params:
-            patches = torch.Tensor(0, patch_size).to(device)
+            patches = torch.Tensor(0, patch_size).to(self.device)
             for elem in x:
                 q_out = self.__partial_measure(elem, params).float().unsqueeze(0)
                 patches = torch.cat((patches, q_out), dim=0)
             images = torch.cat((images, patches), dim=1)
         return self.post_upscale(images)
-
+        #return images
 
 import torch
 import math
